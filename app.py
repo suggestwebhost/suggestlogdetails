@@ -1,6 +1,34 @@
 from flask import Flask, request, jsonify
 from datetime import datetime, timezone
 # (Include your existing pymongo setup/db initialization here)
+import os
+from flask import Flask, request, jsonify
+import uuid
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+
+app = Flask(__name__)
+
+# Replace this with your actual MongoDB Atlas connection string from your cloud console
+# Example format: mongodb+srv://<username>:<password>@cluster0.xxxxxx.mongodb.net/?retryWrites=true&w=majority
+MONGO_URI = os.getenv("MONGO_URI")
+
+try:
+    # Initialize MongoDB Client
+    client = MongoClient(MONGO_URI)
+    # Define/select Database Name
+    db = client['auth_service_db']
+    # Define/select Collection Name (equivalent to a table)
+    users_collection = db['users']
+    
+    # Simple check to see if connection works
+    client.admin.command('ping')
+    print("Successfully connected to MongoDB Cloud!")
+except (ConnectionFailure, Exception) as e:
+    print(f"Could not connect to MongoDB. Error: {e}")
+
 
 @app.route('/register', methods=['POST'])
 def register_user():
